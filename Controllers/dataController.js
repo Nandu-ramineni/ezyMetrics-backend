@@ -1,23 +1,36 @@
 import Data from "../Models/dataModel.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export const fetchAndStoreData = async (req, res) => {
+export const fetchAndDisplayData = async (req, res, next) => {
     try {
-        const dummyData = [
-            { leadName: 'Ramesh Rao', campaignName: 'Campaign A', conversionRate: 30, leadScore: 85 },
-            { leadName: 'Suresh Naidu', campaignName: 'Campaign B', conversionRate: 45, leadScore: 90 },
-            { leadName: 'Lakshmi Narayana', campaignName: 'Campaign C', conversionRate: 55, leadScore: 88 },
-            { leadName: 'Kavya Reddy', campaignName: 'Campaign D', conversionRate: 40, leadScore: 78 },
-            { leadName: 'Vijay Kumar', campaignName: 'Campaign E', conversionRate: 60, leadScore: 95 },
-            { leadName: 'Anitha Rao', campaignName: 'Campaign F', conversionRate: 50, leadScore: 89 },
-            { leadName: 'Rajeshwari Reddy', campaignName: 'Campaign G', conversionRate: 35, leadScore: 82 },
-            { leadName: 'Sai Kiran', campaignName: 'Campaign H', conversionRate: 65, leadScore: 91 },
-            { leadName: 'Manjula Devi', campaignName: 'Campaign I', conversionRate: 25, leadScore: 70 },
-            { leadName: 'Shankar Prasad', campaignName: 'Campaign J', conversionRate: 48, leadScore: 87 }
-        ];
-        await Data.insertMany(dummyData);
 
-        res.status(200).json({ success: true, message: 'Data fetched and stored successfully',data: dummyData});
+        const data = await Data.find({});
+        if (!data || data.length === 0) {
+            return res.status(404).send("No data found");
+        }
+
+        const htmlTemplate = fs.readFileSync(path.join(__dirname, "../views/fetchData.html"), "utf-8");
+
+        let tableRows = '';
+        data.forEach(item => {
+            tableRows += `
+                <tr>
+                    <td>${item.leadName}</td>
+                    <td>${item.campaignName}</td>
+                    <td>${item.conversionRate}</td>
+                    <td>${item.leadScore}</td>
+                </tr>
+            `;
+        });
+
+        const populatedHtml = htmlTemplate.replace('{{tableRows}}', tableRows);
+
+        res.send(populatedHtml);
     } catch (error) {
         next(error);
     }

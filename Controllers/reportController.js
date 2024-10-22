@@ -1,87 +1,94 @@
 import Data from "../Models/dataModel.js";
-import PDFDocument from "pdfkit";
+import pdf from "pdf-creator-node";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import qrcode from "qrcode";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const generatePDFReport = async (req, res) => {
     try {
         const data = await Data.find({});
-        if (!data) {
+        if (!data || data.length === 0) {
             return res.status(404).json({ success: false, message: 'No data found' });
         }
-        const doc = new PDFDocument({ margin: 50 });
-        function generateTableRow(doc, col1, col2, col3, col4) {
-            doc
-                .fontSize(10)
-                .text(col2, 150, doc.y, { continued: true,width: 90, align: 'left' })
-                .text(col3, 250, doc.y, {continued: true, width: 90, align: 'right' })
-                .text(col4, 350, doc.y, {continued: true, width: 90, align: 'right' });
-            doc.moveDown();
-        }
 
-        doc
-            .fontSize(20)
-            .text('EzyMetrics Report', { align: 'center' })
-            .moveDown(1.5);
+        const pageUrl = 'http://localhost:5000/api/report/pdf';
+        const qrCodeImage = await qrcode.toDataURL(pageUrl);
 
-        doc
-            .fontSize(14)
-            .fillColor('#444444')
-            .text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'right' })
-            .moveDown();
-            doc
-            .fontSize(12)
-            .fillColor('#000000')
-            .text('Lead Name', 50, doc.y, { continued: true })
-            .text('Campaign Name', 150, doc.y, { continued: true })
-            .text('Conversion Rate', 300, doc.y, { continued: true,  })
-            .text('Lead Score', 400, doc.y, ) 
-            .moveDown();
-
-        doc.strokeColor('#aaaaaa').lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-
+        const htmlTemplate = fs.readFileSync(path.join(__dirname, "../views/reportTemplate.html"), "utf-8");
+        let tableRows = '';
         data.forEach(item => {
-            generateTableRow(doc, item.leadName, item.campaignName, `${item.conversionRate}%`, item.leadScore);
-            doc.strokeColor('#aaaaaa').lineWidth(0.5).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+            tableRows += `
+                <tr>
+                    <td>${item.leadName}</td>
+                    <td>${item.campaignName}</td>
+                    <td>${item.conversionRate}</td>
+                    <td>${item.leadScore}</td>
+                </tr>
+            `;
         });
-        doc
-            .moveDown(2)
-            .fontSize(12)
-            .text('Thank you for using EzyMetrics!', { align: 'center', fillColor: '#444444' })
-            .moveDown(0.5);
-
-        doc
-            .fontSize(10)
-            .text('This report was generated automatically. For more details, contact us at support@ezymetrics.com.', { align: 'center' });
-
-        doc.end();
-
-        let buffers = [];
-        doc.on('data', buffers.push.bind(buffers));
-        doc.on('end', () => {
-            const pdfData = Buffer.concat(buffers);
-            res.type('pdf');
-            res.send(pdfData);
-    });
+        const html = htmlTemplate
+            .replace('{{date}}', new Date().toLocaleDateString())
+            .replace('{{tableRows}}', tableRows)
+            .replace('{{qrCode}}', qrCodeImage);
+        const options = {
+            format: "A4",
+            orientation: "portrait",
+            border: "10mm",
+            header: {
+                height: "15mm",
+                contents: '<h4 style="text-align: center;">EzyMetrics Report</h4>'
+            },
+            footer: {
+                height: "20mm",
+            }
+        };
+        const document = {
+            html: html,
+            data: {},
+            path: "./output/report.pdf"
+        };
+        pdf.create(document, options)
+            .then(() => {
+                console.log("PDF report generated successfully.");
+                const filePath = path.resolve('./output/report.pdf');
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
+                const fileStream = fs.createReadStream(filePath);
+                fileStream.pipe(res);
+                fileStream.on('end', () => {
+                    fs.unlinkSync(filePath);  
+                });
+            })
+            .catch((error) => {
+                console.error("Error generating PDF:", error);
+                res.status(500).json({ success: false, message: 'Failed to generate PDF report' });
+            });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to generate PDF report' });
+        res.status(500).json({ success: false, message: 'Failed to generate PDF report', error: error.message });
     }
-}
+};
 
 export const generateCSVReport = async (req, res) => {
     try {
         const data = await Data.find({});
-        if (!data) {
+        if (!data || data.length === 0) {
             return res.status(404).json({ success: false, message: 'No data found' });
         }
-        let csvData = 'Lead Name,Campaign Name,Conversion Rate,Lead Score\n';
-
+        let csvData = 'Lead Name,Campaign Name,Conversion Rate (%),Lead Score\n';
         data.forEach(item => {
             csvData += `${item.leadName},${item.campaignName},${item.conversionRate},${item.leadScore}\n`;
         });
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename=report.csv');
+        
         res.status(200).send(csvData);
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to generate CSV report' });
+        console.error("Error generating CSV:", error);
+        res.status(500).json({ success: false, message: 'Failed to generate CSV report', error: error.message });
     }
-}
+};

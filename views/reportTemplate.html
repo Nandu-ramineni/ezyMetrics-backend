@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        header h2 {
+            margin: 0;
+            color: #4CAF50;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .company-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .company-details p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            border-top: 2px solid #4CAF50;
+            margin-top: 30px;
+        }
+
+        footer p {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .generated-date {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* QR Code Styling */
+        .qr-code {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h2>EzyMetrics Report</h2>
+        <p>Empowering Your Business with Data-Driven Insights</p>
+    </header>
+
+    <div class="company-details">
+        <p>EzyMetrics Ltd.</p>
+        <p>Banjara Hills, Hyderabad, Telangna, India 508207.</p>
+        <p>Phone: +123 456 789 | Email: support@ezymetrics.com</p>
+    </div>
+
+    <p class="generated-date">Generated on: {{date}}</p>
+
+    <!-- QR Code -->
+    <div class="qr-code">
+        <img src="{{qrCode}}" alt="QR Code">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Lead Name</th>
+                <th>Campaign Name</th>
+                <th>Conversion Rate (%)</th>
+                <th>Lead Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{tableRows}}
+        </tbody>
+    </table>
+
+    <footer>
+        <p>Thank you for using EzyMetrics!</p>
+        <p>Visit us at: www.ezymetrics.com</p>
+    </footer>
+</body>
+</html>

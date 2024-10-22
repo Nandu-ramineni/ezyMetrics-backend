@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzyMetrics - Campaign Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        header h2 {
+            margin: 0;
+            color: #4CAF50;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .company-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .company-details p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>EzyMetrics Campaign Data Report</h2>
+        <p>Empowering Your Business with Data-Driven Insights</p>
+    </header>
+
+    <div class="company-details">
+        <p>EzyMetrics Ltd.</p>
+        <p>Banjara Hills, Hyderabad, Telangna, India 508207.</p>
+        <p>Phone: +123 456 789 | Email: support@ezymetrics.com</p>
+    </div>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Lead Name</th>
+                    <th>Campaign Name</th>
+                    <th>Conversion Rate (%)</th>
+                    <th>Lead Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{tableRows}} 
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
