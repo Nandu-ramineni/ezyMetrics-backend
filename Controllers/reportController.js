@@ -15,7 +15,7 @@ export const generatePDFReport = async (req, res) => {
             return res.status(404).json({ success: false, message: 'No data found' });
         }
 
-        const pageUrl = 'http://localhost:5000/api/report/pdf';
+        const pageUrl = 'https://ezymetrics-backend.onrender.com/api/report/pdf';
         const qrCodeImage = await qrcode.toDataURL(pageUrl);
 
         const htmlTemplate = fs.readFileSync(path.join(__dirname, "../views/reportTemplate.html"), "utf-8");
