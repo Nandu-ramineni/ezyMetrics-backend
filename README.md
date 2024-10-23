@@ -59,7 +59,7 @@ This is a Node.js-based API for generating reports in PDF and CSV formats using 
 ## Usage
 
 The API provides two key routes for generating reports based on the data stored in the MongoDB database:
-
+- **Note**: **To Access the api's in Live please wait 30 to 50 sec for activate backend services due to free Hosting.**
 - **PDF Report**: Generates a PDF report using the `pdf-creator-node` package.
 - **CSV Report**: Generates a CSV report.
 
