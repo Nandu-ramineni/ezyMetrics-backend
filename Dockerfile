@@ -1,0 +1,22 @@
+# Stage 1: Build
+FROM node:18 AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .          
+RUN npm run build  # outputs to /app/dist
+
+# Stage 2: Run
+FROM node:18 AS runner
+
+WORKDIR /app
+
+# Copy build output and dependencies
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+
+CMD ["npm", "start"]

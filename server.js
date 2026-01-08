@@ -24,7 +24,7 @@ const PORT = process.env.PORT;
 connectDB();
 
 app.get('/', (req, res) => {
-    res.send('Hello from ezyMetrics!');
+    res.send('You are on ezymetrics server! Visit /api for API endpoints. 🎊');
 });
 
 app.listen(PORT, () => {
